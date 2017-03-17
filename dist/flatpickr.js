@@ -116,14 +116,28 @@ function Flatpickr(element, config) {
 
 	function setHours(hours, minutes, seconds) {
 		if (self.selectedDates.length) {
-			self.latestSelectedDateObj.setHours(hours % 24, minutes, seconds || 0, 0);
+			hours = (hours < 24) ? hours : 23;
+			minutes = (minutes < 60) ? minutes : 59;
+			self.latestSelectedDateObj.setHours(hours, minutes, seconds || 0, 0);
 		}
 
 		if (!self.config.enableTime || self.isMobile) return;
 
-		self.hourElement.value = self.pad(!self.config.time_24hr ? (12 + hours) % 12 + 12 * (hours % 12 === 0) : hours);
+		if(!self.config.time_24hr) {
+			self.hourElement.value = self.pad((12 + hours) % 12 + 12 * (hours % 12 === 0));
+		} else {
+			if(hours < 24) {
+				self.hourElement.value = self.pad(hours);
+			} else {
+				self.hourElement.value = self.pad(23);
+			}
+		}
 
-		self.minuteElement.value = self.pad(minutes);
+		if(minutes < 60) {
+			self.minuteElement.value = self.pad(minutes);
+		} else {
+			self.minuteElement.value = self.pad(59);
+		}
 
 		if (!self.config.time_24hr && self.selectedDates.length) self.amPM.textContent = self.latestSelectedDateObj.getHours() >= 12 ? "PM" : "AM";
 
